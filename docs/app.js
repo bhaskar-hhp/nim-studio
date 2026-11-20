@@ -816,7 +816,33 @@
   }
 
   function triggerDownload(filename, content) {
-    const blob = new Blob([content], { type: "application/octet-stream" });
+    let mime = "application/octet-stream";
+    let bytes = content;
+
+    /* Handle data URL: data:image/jpeg;base64,/9j/... */
+    const dataUrlMatch = content.match(/^data:([^;,]+)(?:;base64)?,(.*)$/s);
+    if (dataUrlMatch) {
+      mime = dataUrlMatch[1] || mime;
+      const isB64 = content.includes(";base64");
+      bytes = isB64 ? b64ToBytes(dataUrlMatch[2]) : dataUrlMatch[2];
+    } else {
+      /* Guess MIME from extension */
+      const ext = filename.toLowerCase().split(".").pop();
+      const mimeMap = {
+        jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
+        gif: "image/gif", webp: "image/webp", svg: "image/svg+xml",
+        txt: "text/plain", html: "text/html", json: "application/json",
+        pdf: "application/pdf", zip: "application/zip",
+      };
+      mime = mimeMap[ext] || "application/octet-stream";
+
+      /* Decode base64 content to binary bytes */
+      if (isBase64(content)) {
+        bytes = b64ToBytes(content);
+      }
+    }
+
+    const blob = new Blob([bytes], { type: mime });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -826,6 +852,19 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast(`Downloaded "${filename}"`);
+  }
+
+  function isBase64(s) {
+    const t = String(s || "").trim();
+    if (t.length === 0 || t.length % 4 !== 0) return false;
+    return /^[A-Za-z0-9+/]+={0,2}$/.test(t);
+  }
+
+  function b64ToBytes(base64) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes;
   }
 
   async function send() {
