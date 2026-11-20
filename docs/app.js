@@ -12,6 +12,7 @@
     active: "nimstudio.active.v1",
     settings: "nimstudio.settings.v1",
     model: "nimstudio.model.v1",
+    sidebar: "nimstudio.sidebar.v1",
   };
 
   const DEFAULT_MODEL = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning";
@@ -909,6 +910,11 @@
 
   /* ------------------------------------------------------- sidebar / misc */
 
+  const MOBILE_Q = "(max-width: 860px)";
+  const isMobile = () => (window.matchMedia
+    ? window.matchMedia(MOBILE_Q).matches
+    : window.innerWidth <= 860);
+
   function openSidebar() {
     $("#sidebar").classList.add("open");
     $("#scrim").hidden = false;
@@ -917,7 +923,17 @@
   function closeSidebar() {
     $("#sidebar").classList.remove("open");
     $("#scrim").hidden = true;
-    $("#sidebar-toggle").setAttribute("aria-expanded", "false");
+    if (isMobile()) $("#sidebar-toggle").setAttribute("aria-expanded", "false");
+  }
+
+  /* Desktop: collapse / restore the catalogue pane. */
+  function setSidebarCollapsed(collapsed) {
+    const app = $(".app");
+    app.classList.toggle("sidebar-collapsed", collapsed);
+    lsSet(LS.sidebar, collapsed);
+    const btn = $("#sidebar-toggle");
+    btn.setAttribute("aria-expanded", String(!collapsed));
+    btn.setAttribute("aria-label", collapsed ? "Show model list" : "Hide model list");
   }
 
   function applySettingsToUI() {
@@ -933,9 +949,28 @@
 
   function bind() {
     /* sidebar */
-    $("#sidebar-toggle").onclick = openSidebar;
+    $("#sidebar-toggle").onclick = () => {
+      if (isMobile()) openSidebar();
+      else setSidebarCollapsed(!$(".app").classList.contains("sidebar-collapsed"));
+    };
+    $("#sidebar-collapse").onclick = () => { if (!isMobile()) setSidebarCollapsed(true); };
     $("#sidebar-close").onclick = closeSidebar;
     $("#scrim").onclick = closeSidebar;
+
+    /* keep the collapsed state sane when crossing the 860px breakpoint */
+    const mq = window.matchMedia ? window.matchMedia(MOBILE_Q) : null;
+    const onBreakpoint = () => {
+      if (mq.matches) {
+        $(".app").classList.remove("sidebar-collapsed");
+        closeSidebar();
+        $("#sidebar-toggle").setAttribute("aria-expanded", "false");
+        $("#sidebar-toggle").setAttribute("aria-label", "Open model list");
+      } else {
+        setSidebarCollapsed(lsGet(LS.sidebar, false) === true);
+      }
+    };
+    if (mq && mq.addEventListener) mq.addEventListener("change", onBreakpoint);
+    else if (mq && mq.addListener) mq.addListener(onBreakpoint);
 
     /* catalogue */
     $("#model-search").addEventListener("input", (e) => {
@@ -1040,6 +1075,15 @@
     applySettingsToUI();
     bind();
     renderAttachments();
+
+    /* restore a collapsed catalogue on desktop; mobile always starts closed */
+    if (isMobile()) {
+      $(".app").classList.remove("sidebar-collapsed");
+      $("#sidebar-toggle").setAttribute("aria-expanded", "false");
+      $("#sidebar-toggle").setAttribute("aria-label", "Open model list");
+    } else {
+      setSidebarCollapsed(lsGet(LS.sidebar, false) === true);
+    }
 
     await loadModels({ silent: true });
     await checkBackend();

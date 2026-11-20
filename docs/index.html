@@ -20,6 +20,8 @@
         <div class="brand-name">Bhaskar's AI Studio</div>
         <div class="brand-sub">NVIDIA NIM models</div>
       </div>
+      <button class="icon-btn only-desktop" id="sidebar-collapse"
+              aria-label="Hide model list" title="Hide model list">«</button>
       <button class="icon-btn only-mobile" id="sidebar-close" aria-label="Close model list">✕</button>
     </div>
 
@@ -53,8 +55,8 @@
 
   <main class="main">
     <header class="topbar">
-      <button class="icon-btn only-mobile" id="sidebar-toggle" aria-label="Open model list"
-              aria-controls="sidebar" aria-expanded="false">☰</button>
+      <button class="icon-btn" id="sidebar-toggle" aria-label="Hide model list" title="Hide / show model list"
+              aria-controls="sidebar" aria-expanded="true">☰</button>
 
       <div class="model-pill" id="model-pill" title="Active model">
         <span class="pill-dot" aria-hidden="true"></span>

@@ -57,6 +57,14 @@ a { color: var(--accent-2); }
   height: 100dvh;
 }
 
+/* Collapse the catalogue pane on wide screens. The ☰ button in the top bar
+   brings it back; the choice is remembered in localStorage. */
+@media (min-width: 861px) {
+  .app { transition: grid-template-columns 0.16s ease; }
+  .app.sidebar-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
+  .app.sidebar-collapsed .sidebar { display: none; }
+}
+
 /* ---------------------------------------------------------------- sidebar */
 
 .sidebar {
@@ -728,6 +736,12 @@ a { color: var(--accent-2); }
 
 .only-mobile { display: none; }
 
+.only-desktop {
+  display: grid;
+  margin-left: auto;
+  font-size: 17px;
+}
+
 /* ---------------------------------------------------------------- mobile */
 
 @media (max-width: 860px) {
@@ -745,6 +759,7 @@ a { color: var(--accent-2); }
   .sidebar.open { transform: translateX(0); }
 
   .only-mobile { display: grid; }
+  .only-desktop { display: none; }
 
   .topbar { padding: 9px 10px; gap: 8px; }
   .model-pill { font-size: 12px; padding: 5px 9px; }
