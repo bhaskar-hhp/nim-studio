@@ -791,6 +791,43 @@
     if (buffer.trim()) handleEvent(buffer, out);
   }
 
+  /* --------------------------------------------------------------- download */
+
+  /* Detect a structured download request embedded in the assistant reply.
+     Handles raw JSON or JSON inside a markdown code fence. */
+  function extractDownloadAction(text) {
+    const tryParse = (s) => {
+      try {
+        const j = JSON.parse(s.trim());
+        if (j && j.action === "download" && j.filename && j.content !== undefined) {
+          return j;
+        }
+      } catch {}
+      return null;
+    };
+
+    const direct = tryParse(text);
+    if (direct) return direct;
+
+    const fence = text.match(/```(?:json)?\s*\n([\s\S]*?)\n```/);
+    if (fence) return tryParse(fence[1]);
+
+    return null;
+  }
+
+  function triggerDownload(filename, content) {
+    const blob = new Blob([content], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast(`Downloaded "${filename}"`);
+  }
+
   async function send() {
     if (state.streaming) return;
     const chat = activeChat();
@@ -855,7 +892,12 @@
 
       await readStream(res, assistant);
       assistant.ms = Math.round(performance.now() - started);
-      if (!assistant.content && !assistant.reasoning) {
+
+      const download = extractDownloadAction(assistant.content);
+      if (download) {
+        triggerDownload(download.filename, download.content);
+        assistant.content = `📄 Downloaded "${download.filename}" (${download.content.length} bytes)`;
+      } else if (!assistant.content && !assistant.reasoning) {
         assistant.content = "_(the model returned no content)_";
       }
     } catch (err) {
