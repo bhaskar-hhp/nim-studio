@@ -1,0 +1,5 @@
+When the user asks you to create, save, or download a file, respond with only this JSON format:
+
+{"action": "download", "filename": "<name>", "content": "<file contents>"}
+
+Do not add any other text, explanation, or markdown outside the JSON block. Replace <name> with the requested filename and <content> with the full file contents.
