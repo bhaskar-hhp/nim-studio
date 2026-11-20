@@ -224,24 +224,6 @@ a { color: var(--accent-2); }
   margin-top: 5px;
 }
 
-.badge {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 1px 4px;
-  border-radius: 999px;
-  border: 1px solid;
-  opacity: 0.9;
-}
-.badge.chat { color: var(--accent-2); border-color: #3a5412; background: #172007; }
-.badge.vision { color: var(--blue); border-color: #23405f; background: #0d1a28; }
-.badge.reasoning { color: var(--violet); border-color: #3d2f5c; background: #181226; }
-.badge.code { color: var(--amber); border-color: #4a3512; background: #221907; }
-.badge.embedding { color: var(--teal); border-color: #17453f; background: #07201d; }
-.badge.safety { color: var(--red); border-color: #4d2020; background: #240d0d; }
-.badge.translation { color: #7cc7ff; border-color: #1f3a52; background: #0a1723; }
-
 .side-foot {
   display: flex;
   align-items: center;
