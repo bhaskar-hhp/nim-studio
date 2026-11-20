@@ -186,7 +186,8 @@ a { color: var(--accent-2); }
 }
 
 .model {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   text-align: left;
   border: 1px solid transparent;
@@ -221,7 +222,8 @@ a { color: var(--accent-2); }
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 5px;
+  margin-top: auto;
+  align-self: flex-start;
 }
 
 .badge {
