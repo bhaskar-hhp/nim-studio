@@ -188,7 +188,16 @@
       sub.className = "m-sub";
       sub.textContent = [m.publisher, m.size].filter(Boolean).join(" · ");
 
-      b.append(name, sub);
+      const badges = document.createElement("div");
+      badges.className = "m-badges";
+      for (const t of m.tags) {
+        const s = document.createElement("span");
+        s.className = "badge " + t;
+        s.textContent = t;
+        badges.appendChild(s);
+      }
+
+      b.append(name, sub, badges);
       b.onclick = () => selectModel(m.id);
       frag.appendChild(b);
     }
