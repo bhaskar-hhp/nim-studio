@@ -53,7 +53,7 @@ a { color: var(--accent-2); }
 
 .app {
   display: grid;
-  grid-template-columns: 334px minmax(0, 1fr);
+  grid-template-columns: 334px 1fr;
   height: 100dvh;
 }
 
@@ -61,8 +61,8 @@ a { color: var(--accent-2); }
    brings it back; the choice is remembered in localStorage. */
 @media (min-width: 861px) {
   .app { transition: grid-template-columns 0.16s ease; }
-  .app.sidebar-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
-  .app.sidebar-collapsed .sidebar { display: none; }
+  .app.sidebar-collapsed { grid-template-columns: 0 1fr; }
+  .app.sidebar-collapsed .sidebar { display: none; width: 0; }
 }
 
 /* ---------------------------------------------------------------- sidebar */
