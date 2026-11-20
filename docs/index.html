@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Chat with every model on NVIDIA NIM — one catalogue, streaming replies, vision support.">
+<title>NIM Studio — NVIDIA NIM model explorer & chat</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0c10'/%3E%3Cpath d='M32 10l18 11v22L32 54 14 43V21z' fill='none' stroke='%2376b900' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%2376b900'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="NVIDIA NIM model catalogue">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">◈</div>
+      <div class="brand-text">
+        <div class="brand-name">NIM Studio</div>
+        <div class="brand-sub">NVIDIA NIM models</div>
+      </div>
+      <button class="icon-btn only-mobile" id="sidebar-close" aria-label="Close model list">✕</button>
+    </div>
+
+    <div class="search">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <input id="model-search" type="search" placeholder="Search models…"
+             autocomplete="off" spellcheck="false" aria-label="Search models">
+    </div>
+
+    <div class="filters" id="filters" role="tablist" aria-label="Filter models">
+      <button class="chip active" data-filter="all" role="tab" aria-selected="true">All</button>
+      <button class="chip" data-filter="chat" role="tab" aria-selected="false">Chat</button>
+      <button class="chip" data-filter="vision" role="tab" aria-selected="false">Vision</button>
+      <button class="chip" data-filter="reasoning" role="tab" aria-selected="false">Reasoning</button>
+      <button class="chip" data-filter="code" role="tab" aria-selected="false">Code</button>
+      <button class="chip" data-filter="embedding" role="tab" aria-selected="false">Embeddings</button>
+    </div>
+
+    <div class="list-meta">
+      <span id="model-count">Loading…</span>
+      <button class="link-btn" id="models-refresh" title="Refresh the live catalogue">↻ refresh</button>
+    </div>
+
+    <div class="model-list" id="model-list" role="list"></div>
+
+    <div class="side-foot">
+      <span id="api-state" class="state idle">checking…</span>
+      <a href="https://build.nvidia.com/models" target="_blank" rel="noopener noreferrer">build.nvidia.com ↗</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn only-mobile" id="sidebar-toggle" aria-label="Open model list"
+              aria-controls="sidebar" aria-expanded="false">☰</button>
+
+      <div class="model-pill" id="model-pill" title="Active model">
+        <span class="pill-dot" aria-hidden="true"></span>
+        <span id="model-pill-name">Loading models…</span>
+      </div>
+
+      <div class="top-actions">
+        <select id="chat-select" class="chat-select" aria-label="Conversations" hidden></select>
+        <button class="btn ghost" id="new-chat">+ New chat</button>
+        <button class="icon-btn" id="settings-btn" aria-label="Generation settings"
+                aria-controls="settings" aria-expanded="false">⚙</button>
+      </div>
+    </header>
+
+    <div class="banner" id="banner" hidden></div>
+
+    <section class="settings" id="settings" hidden aria-label="Generation settings">
+      <label class="field-label" for="sys-prompt">System prompt</label>
+      <textarea id="sys-prompt" rows="2" placeholder="You are a helpful assistant…"></textarea>
+      <div class="settings-row">
+        <label class="field-label" for="temperature">Temperature <output id="temp-val">0.6</output>
+          <input id="temperature" type="range" min="0" max="2" step="0.1" value="0.6">
+        </label>
+        <label class="field-label" for="max-tokens">Max tokens
+          <input id="max-tokens" type="number" min="64" max="8192" step="64" value="1024">
+        </label>
+      </div>
+      <div class="settings-actions">
+        <span class="muted small">Chats are stored only in this browser.</span>
+        <button class="btn danger" id="delete-chat">Delete this chat</button>
+      </div>
+    </section>
+
+    <section class="chat" id="chat" aria-live="polite"></section>
+
+    <footer class="composer">
+      <div class="attachments" id="attachments" hidden></div>
+      <div class="composer-row">
+        <button class="icon-btn" id="attach" title="Attach images (vision models)" aria-label="Attach images">🖼</button>
+        <input type="file" id="image-input" accept="image/*" multiple hidden>
+        <textarea id="prompt" rows="1" placeholder="Message…" aria-label="Message"></textarea>
+        <button class="btn primary" id="send">Send</button>
+        <button class="btn danger" id="stop" hidden>Stop</button>
+      </div>
+      <div class="composer-hint">
+        <span>Enter to send · Shift+Enter for a new line</span>
+        <span id="stream-hint" class="muted"></span>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

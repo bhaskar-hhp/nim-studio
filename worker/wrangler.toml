@@ -1,0 +1,8 @@
+name = "nim-studio"
+main = "index.js"
+compatibility_date = "2026-01-01"
+
+# The Worker only proxies bytes and JSON; the free plan is enough.
+[vars]
+# Your Pages origin. Comma-separate to allow more. Use "*" only for local dev.
+ALLOWED_ORIGINS = "https://bhaskar-hhp.github.io"
